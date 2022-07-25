@@ -23,7 +23,7 @@ module Minitest
   module Unparallelize
     define_method(:run_one_method, &Minitest::Test.method(:run_one_method))
   end
-  
+
   def self.parallel_fork_stat_reporter(reporter)
     reporter.reporters.detect do |rep|
       %w'count assertions results count= assertions='.all?{|meth| rep.respond_to?(meth)}
@@ -61,6 +61,14 @@ module Minitest
         end
 
         data = %w'count assertions results'.map{|meth| stat_reporter.send(meth)}
+        puts ">>>"
+        data.each do |d|
+          if d.is_a?(Array)
+            d.each do |dd|
+              puts "  > #{dd.class}"
+            end
+          end
+        end
         write.write(Marshal.dump(data))
         write.close
       end
