@@ -41,7 +41,7 @@ describe 'minitest/parallel_fork' do
    ['MPF_PARALLELIZE_ME', ' when parallelize_me! is used'],
    ['MPF_TEST_ORDER_PARALLEL', ' when test_order parallel is used'],
    ['MPF_MINITEST_HOOKS', ' when minitest/hooks is used'],
-   ['MPF_FAIL_FAST', ' when using fail fast support']
+   ['MPF_FAIL_FAST', ' when using fail fast support'],
   ].each do |env_key, msg|
     it "should execute in parallel#{msg} with passing test suite" do
       @example_prefix = 'pass_'
