@@ -7,6 +7,8 @@ require 'minitest/global_expectations/autorun'
 
 ENV['NCPU'] = '4'
 
+require 'open3'
+
 describe 'minitest/parallel_fork' do
   def run_mpf(*env_keys)
     env_keys.each{|k| ENV[k] = '1'}
@@ -82,5 +84,23 @@ describe 'minitest/parallel_fork' do
     time.must_be :<, 1
     output.must_include '4 runs, 7 assertions, 1 failures, 0 errors, 0 skips'
     output.wont_include 'not_executed'
+  end
+
+  it "should force stop all forks with 2x interrupt" do
+    command = "#{ENV['RUBY']} -I lib spec/minitest_parallel_fork_interrupt_example.rb"
+
+    output = Open3.popen2e(command) { |stdin, out, wait_thr|
+      stdin.close
+      sleep 1
+      Process.kill('INT', wait_thr.pid)
+      sleep 1
+      Process.kill('INT', wait_thr.pid)
+      wait_thr.value
+      out.read
+    }
+
+    output.must_include 'Interrupted.'
+    output.must_include 'Exiting ...'
+    output.must_include 'Interrupt again to exit now.'
   end
 end
